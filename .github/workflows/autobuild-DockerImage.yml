@@ -20,7 +20,7 @@ jobs:
         with:
           base-image: library/caddy:alpine
           # variable for repoowner/repo-name
-          image: ${{ github.repository }}
+          image: glopix/caddy-ionos-dns 
           
   build:
     name: build new docker image
