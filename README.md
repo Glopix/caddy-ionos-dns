@@ -7,7 +7,7 @@ https://github.com/Glopix/caddy-ionos-dns
 ## Usage
 For further information and more detailed instructions on the use of this container/caddy-module, please refer to the https://github.com/caddyserver/caddy and https://github.com/caddy-dns/ionos on how to use the DNS module.
 
-## Docker Compose Example (excluding backend/reverse proxy target)
+### Docker Compose Example (excluding backend/reverse proxy target)
 docker-compose.yml
 ```
 version: "3.8"
@@ -43,7 +43,7 @@ volumes:
   caddy_data:
 ```
 
-## Caddyfile Example
+### Caddyfile Example
 Caddyfile
 ```
 your.domain.com {
