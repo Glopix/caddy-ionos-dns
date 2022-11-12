@@ -42,3 +42,14 @@ networks:
 volumes:
   caddy_data:
 ```
+
+## Caddyfile Example
+Caddyfile
+```
+your.domain.com {
+  respond "Hello World"	# replace with whatever config you need...
+  tls {
+    dns ionos {env.YOUR_IONOS_AUTH_API_TOKEN}
+  }
+}
+```
