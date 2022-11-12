@@ -19,7 +19,8 @@ jobs:
         uses: lucacome/docker-image-update-checker@v1
         with:
           base-image: library/caddy:alpine
-          image: glopix/caddy-ionos-dns
+          # variable for repoowner/repo-name
+          image: ${{ github.repository }}
           
   build:
     name: build new docker image
@@ -54,7 +55,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
-          tags: glopix/caddy-ionos-dns:latest
+          tags: ${{ github.repository }}:latest
         
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v3
