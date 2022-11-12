@@ -30,7 +30,7 @@ jobs:
   build:
     name: build new docker image
     needs: check
-    #if: needs.check.outputs.needs-updating == 'true'
+    if: needs.check.outputs.needs-updating == 'true'
     runs-on: ubuntu-latest
     steps:
     
