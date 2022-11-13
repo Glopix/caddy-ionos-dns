@@ -19,19 +19,12 @@ services:
     ports:
       - 80:80
       - 443:443
-    environment:
-      - CADDY_INGRESS_NETWORKS=caddy
-# if you want an additional Caddyfile:
-# (e.g. if you dont want to configure the ACME-DNS module via labels)
-#      - CADDY_DOCKER_CADDYFILE_PATH=/data/Caddyfile
-
     networks:
       - caddy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - caddy_data:/data
-# if you want an additional  Caddyfile:      
-#      - ./Caddyfile:/data/Caddyfile
+      - caddy_data:/data    
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
 
 networks:
   caddy:
