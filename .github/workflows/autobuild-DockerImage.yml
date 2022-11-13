@@ -24,8 +24,7 @@ jobs:
         uses: lucacome/docker-image-update-checker@v1
         with:
           base-image: library/caddy:alpine
-          # variable for repoowner/repo-name
-          image: ${{ inputs.docker-hub-image-name }} 
+          image: ${{ inputs.docker-hub-image-name }} # variable for repoowner/repo-name
           
   build:
     name: build new docker image
