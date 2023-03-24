@@ -1,11 +1,14 @@
 # caddy-ionos-dns
-[caddyserver/caddy](https://github.com/caddyserver/caddy) with the Caddy [DNS Module for Ionos](https://github.com/caddy-dns/ionos)
+[caddyserver/caddy](https://github.com/caddyserver/caddy) with the Caddy [DNS Module for Ionos](https://github.com/caddy-dns/ionos) and [layer 4 app from mholt (caddy-l4)](https://github.com/mholt/caddy-l4)
 
 ## Github Repository / Dockerfile
 https://github.com/Glopix/caddy-ionos-dns
 
 ## Usage
-For further information and more detailed instructions on the use of this container/caddy-module, please refer to https://github.com/caddyserver/caddy and https://github.com/caddy-dns/ionos on how to use the DNS module.
+For further information and more detailed instructions on the use of this container/caddy-module, please refer to:  
+https://github.com/caddyserver/caddy on how to use Caddy,  
+https://github.com/caddy-dns/ionos on how to use the DNS module and  
+https://github.com/mholt/caddy-l4 on how to use the layer 4 module/app.  
 
 ### Docker Compose Example (excluding backend/reverse proxy target)
 docker-compose.yml
@@ -36,7 +39,7 @@ volumes:
   caddy_data:
 ```
 
-### Caddyfile Example
+### Caddyfile Example for Ionos DNS
 Caddyfile
 ```
 your.domain.com {
