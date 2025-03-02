@@ -3,8 +3,17 @@ name: Autoupdate build on base-image change (caddy)
 
 on:
   schedule:
-    - cron:  '46 21 * * */2'
+    - cron:  '44 21 */2 * *'
   workflow_dispatch:
+    inputs:
+      force_build:
+        description: 'Force build'
+        required: true
+        default: 'no'
+        type: choice
+        options:
+          - "no"
+          - "yes"
 
 jobs:
   check:
@@ -24,40 +33,40 @@ jobs:
   build:
     name: build new docker image
     needs: check
-    if: needs.check.outputs.needs-updating == 'true'
+    if: needs.check.outputs.needs-updating == 'true' || github.event.inputs.force_build == 'yes'
     runs-on: ubuntu-latest
     steps:
     
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # for multi architecture builds (x64, arm64, arm)
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-        with:
-          image: tonistiigi/binfmt:latest
-          platforms: arm64,arm
+#      - name: Set up QEMU
+#        uses: docker/setup-qemu-action@v2
+#        with:
+#          image: tonistiigi/binfmt:latest
+#          platforms: arm64,arm
           
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
         
         
       - name: Login to DockerHub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
         
       - name: Build and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: .
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64, linux/arm/v6, linux/arm/v7, linux/arm64/v8
           push: true
           tags: glopix/caddy-ionos-dns:latest
         
       - name: Docker Hub Description
-        uses: peter-evans/dockerhub-description@v3
+        uses: peter-evans/dockerhub-description@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
