@@ -23,9 +23,14 @@ jobs:
       needs-updating: ${{ steps.check.outputs.needs-updating }}
       
     steps:
+      - name: Login to Docker Registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }} 
       - name: Check if update available
         id: check
-        uses: lucacome/docker-image-update-checker@v1
+        uses: lucacome/docker-image-update-checker@v2
         with:
           base-image: library/caddy:alpine
           image: glopix/caddy-ionos-dns
