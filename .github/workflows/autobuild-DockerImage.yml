@@ -58,7 +58,10 @@ jobs:
   build:
     name: build new docker image
     needs: check
-    if: needs.check.outputs.needs-updating == 'true' || github.event.inputs.force_build == 'yes'
+    if: |
+        needs.check.outputs.needs-updating == 'true' ||
+        needs.check.outputs.days-since-last-build > 50 ||
+        github.event.inputs.force_build == 'yes'
     runs-on: ubuntu-latest
     steps:
     
