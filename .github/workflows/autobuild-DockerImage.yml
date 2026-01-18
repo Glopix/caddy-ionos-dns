@@ -38,11 +38,11 @@ jobs:
           base-image: library/caddy:alpine
           image: glopix/caddy-ionos-dns
 
-      - name: Read previously saved release date
+      - name: Read previously saved image build date
         id: saved
         run: |
-          if [ -f "./gh-workflow_build-date.txt" ]; then
-            SAVED_BUILD_DATE=$(cat ./gh-workflow_build-date.txt)
+          if [ -f "./gh-workflow_image-build-date.txt" ]; then
+            SAVED_BUILD_DATE=$(cat ./gh-workflow_image-build-date.txt)
           else
             SAVED_BUILD_DATE="none"
           fi
@@ -50,7 +50,7 @@ jobs:
           echo "SAVED_BUILD_DATE=$SAVED_BUILD_DATE" >> "$GITHUB_ENV"
            
       - id: days-since-build
-        name: get number of days since last bin build
+        name: get number of days since last image build
         run: |
           DAYS_SINCE_LAST_BUILD_DATE=$(( ( $(date +%s) - $(date -d "$SAVED_BUILD_DATE" +%s) )/(60*60*24) ))
           echo "days-since-last-build=$DAYS_SINCE_LAST_BUILD_DATE" >> "$GITHUB_OUTPUT"
@@ -119,7 +119,7 @@ jobs:
       - name: save last image build date to files
         run: |
             TODAY=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-            echo "$TODAY" > ./gh-workflow_build-date.txt
+            echo "$TODAY" > ./gh-workflow_image-build-date.txt
 
       - name: Commit updated release data
         uses: stefanzweifel/git-auto-commit-action@v7
