@@ -21,6 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       needs-updating: ${{ steps.check.outputs.needs-updating }}
+      saved-build-date: ${{ steps.saved.outputs.saved-build-date }}
+      days-since-last-build: ${{ steps.days-since-build.outputs.days-since-last-build }}
       
     steps:
       - name: Login to Docker Registry
@@ -28,12 +30,30 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }} 
+
       - name: Check if update available
         id: check
         uses: lucacome/docker-image-update-checker@v2
         with:
           base-image: library/caddy:alpine
           image: glopix/caddy-ionos-dns
+
+      - name: Read previously saved release date
+        id: saved
+        run: |
+          if [ -f "./gh-workflow_build-date.txt" ]; then
+            SAVED_BUILD_DATE=$(cat ./gh-workflow_build-date.txt)
+          else
+            SAVED_BUILD_DATE="none"
+          fi
+          echo "saved-build-date=$SAVED_BUILD_DATE" >> "$GITHUB_OUTPUT"
+          echo "SAVED_BUILD_DATE=$SAVED_BUILD_DATE" >> "$GITHUB_ENV"
+           
+      - id: days-since-build
+        name: get number of days since last bin build
+        run: |
+          DAYS_SINCE_LAST_BUILD_DATE=$(( ( $(date +%s) - $(date -d "$SAVED_BUILD_DATE" +%s) )/(60*60*24) ))
+          echo "days-since-last-build=$DAYS_SINCE_LAST_BUILD_DATE" >> "$GITHUB_OUTPUT"
           
   build:
     name: build new docker image
@@ -76,3 +96,35 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           short-description: ${{ github.event.repository.description }}
+
+
+  save-build-info:
+    name: save build info
+    needs: [check, build]
+    runs-on: ubuntu-latest
+    if: needs.build.result == 'success' && needs.build.result != 'skipped'
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          repository: ${{ github.repository }}
+          ref: gh-workflows
+
+      - name: save last image build date to files
+        run: |
+            TODAY=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+            echo "$TODAY" > ./gh-workflow_build-date.txt
+
+      - name: Commit updated release data
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          branch: gh-workflows
+          file_pattern: 'gh-workflow_*.txt'
+          commit_message: "Update stored release info"
+          commit_user_name: GitHub Actions Bot
+          commit_user_email: github-actions-bot@none.dom
+          commit_author: GitHub Actions Bot <github-actions-bot@none.dom>
+          create_branch: true
